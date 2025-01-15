@@ -6,25 +6,32 @@ URL = "https://backendbeweliteqa.bewe.co/api/v1/llm/interview"
 
 def interviewer_agent() -> str:
 	print("interviewer_agent executed")
-	st.title("Helper stream lit")
-	st.write("This is a helper streamlit chat command")
+	st.title("Interviewer Agent")
 
 	# Initialize thread_id in session state if it doesn't exist
 	if "thread_id" not in st.session_state:
 		st.session_state.thread_id = str(random.randint(1, 1000000))
 
-	account_id = st.sidebar.text_input('Account ID', value="234234234234")
-	thread_id = st.sidebar.text_input('Thread ID', value=st.session_state.thread_id)
+	account_id = st.sidebar.text_input('Account ID', value="234234234234", help="This feature is not available at the moment")
+	thread_id = st.sidebar.text_input('Thread ID', value=st.session_state.thread_id, help="Save for checkpointer of the conversation")
 
 	language = st.sidebar.selectbox(
-
 		'Language',
 		('spanish', 'english', 'portuguese')
 	)
+
 	account_type = st.sidebar.selectbox(
-			'Type',
-			('barbershops', 'restaurants', 'hotels', 'shopping', 'other')
+		'Type',
+		('beauty', 'other'),
+		help="Select the type of account you want to generate questions for. Other is for any other type of account. (Only load base questions)"
 	)
+
+	question_quantity = st.sidebar.number_input(
+		'Question Quantity',
+		value=100,
+		help="Enter the number of questions you want to generate. Setting it to 100 will generate all available questions."
+	)
+
 	if account_type == 'other':
 		account_type = st.sidebar.text_input('Other')
 
@@ -54,7 +61,8 @@ def interviewer_agent() -> str:
 					"thread_id": thread_id,
 					"account_id": account_id,
 					"type": account_type,
-					"language": language
+					"language": language,
+					"question_quantity": question_quantity
 				})
 				full_response = response.json().get("response", "")
 				message_placeholder.markdown(full_response)
