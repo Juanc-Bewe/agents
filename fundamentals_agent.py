@@ -7,20 +7,9 @@ import os
 
 URL = "https://backendbeweliteqa.bewe.co/api/v1/llm/interview"
 
-def save_questions_to_file(thread_id, questions):
-    # Create a directory for saved questions if it doesn't exist
-    os.makedirs('saved_questions', exist_ok=True)
-    filename = f'saved_questions/{thread_id}.json'
-    with open(filename, 'w') as f:
-        json.dump(questions, f)
-
-def load_questions_from_file(thread_id):
-    try:
-        filename = f'saved_questions/{thread_id}.json'
-        with open(filename, 'r') as f:
-            return json.load(f)
-    except FileNotFoundError:
-        return []
+def load_base_questions():
+    with open('questions/base-1.json', 'r') as file:
+        return json.load(file)
 
 def fundamental_agent() -> str:
     print("fundamental_agent executed")
@@ -31,40 +20,32 @@ def fundamental_agent() -> str:
         st.session_state.thread_id = str(random.randint(1, 1000000))
 
     # Load saved questions for this thread when initializing session state
-    if "questions_list" not in st.session_state:
-        st.session_state.questions_list = load_questions_from_file(st.session_state.thread_id)
 
     st.sidebar.markdown("## ⚙️ Fundamental Config")
-    test_tab = st.sidebar.tabs(["Basic config", "Questions"])
+    tabs = st.sidebar.tabs(["Basic config", "Questions"])
 
-    with test_tab[0]:
-        # Get previous thread_id for comparison
-        previous_thread_id = st.session_state.thread_id
+    with tabs[0]:
 
         # Thread ID input
-        thread_id = st.text_input('Thread ID', value=st.session_state.thread_id, 
+        thread_id = st.text_input('Thread ID', value=st.session_state.thread_id,
             help="Save for checkpointer of the conversation")
-
-        # Update thread_id in session state and reload questions if changed
-        if thread_id != previous_thread_id:
-            st.session_state.thread_id = thread_id
-            st.session_state.questions_list = load_questions_from_file(thread_id)
-            st.rerun()
 
         language = st.selectbox(
             'Language',
             ('spanish', 'english', 'portuguese')
         )
 
-    with test_tab[1]:
-        questions_tab = st.tabs(["Create", "View"])
+    with tabs[1]:
+        questions_tab = st.tabs(["Questions", "Add"])
 
         # Create new question section
-        with questions_tab[0]:
+        with questions_tab[1]:
             with st.expander("Create New Question", expanded=True):
                 question = st.text_input("Question", key="new_question")
-                criteria = st.text_area("Evaluation Criteria", key="new_criteria", 
+                criteria = st.text_area("Evaluation Criteria", key="new_criteria",
                     help="Enter the criteria to evaluate the answer")
+                example = st.text_area("Example Answer", key="new_example",
+                    help="Enter an example of a good answer")
 
                 if st.button("Add Question"):
                     if "questions_list" not in st.session_state:
@@ -73,18 +54,26 @@ def fundamental_agent() -> str:
                     if question and criteria:
                         st.session_state.questions_list.append({
                             "question": question,
-                            "criteria": criteria
+                            "criteria": criteria,
+                            "example": example
                         })
-                        # Clear the inputs by modifying the session state before widget creation
                         st.success("Question added successfully!")
-                        time.sleep(1)  # Wait 1 second to show success message
+                        time.sleep(1)
                         st.session_state.pop('new_question', None)
                         st.session_state.pop('new_criteria', None)
+                        st.session_state.pop('new_example', None)
                         st.session_state.new_question = ""
                         st.session_state.new_criteria = ""
+                        st.session_state.new_example = ""
                         st.rerun()
+
         # Display questions section
-        with questions_tab[1]:
+        with questions_tab[0]:
+
+            if st.button("Load Base questions", key="load_questions"):
+                st.session_state.questions_list = load_base_questions()
+                st.rerun()
+
             with st.expander("View Questions List", expanded=True):
                 if "questions_list" in st.session_state and st.session_state.questions_list:
                     st.write("Current Questions:")
@@ -93,6 +82,7 @@ def fundamental_agent() -> str:
                         with col1:
                             st.write(f"{i+1}. Question: {q['question']}")
                             st.write(f"   Criteria: {q['criteria']}")
+                            st.write(f"   Example: {q.get('example', 'No example provided')}")
                         with col2:
                             if st.button("🗑️", key=f"delete_{i}"):
                                 st.session_state.questions_list.pop(i)
