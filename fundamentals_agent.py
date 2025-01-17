@@ -31,6 +31,15 @@ def fundamental_agent() -> str:
             st.info(f"Language: {st.session_state.language}")
         else:
             # Thread ID input
+            st.markdown("#### Load Questions")
+            st.markdown("Click to load the default set of questions. ⚠️ Warning: Loading base questions will remove any custom questions you've added. Are you sure?")
+
+            if st.button("Load Base Questions", key="load_questions"):
+                st.session_state.questions_list = load_base_questions()
+                st.success("Base questions loaded successfully!")
+                time.sleep(1)  # Give users time to see the success message
+                st.rerun()
+
             thread_id = st.text_input('Thread ID', value=st.session_state.thread_id,
                 help="Save for checkpointer of the conversation")
 
@@ -39,8 +48,11 @@ def fundamental_agent() -> str:
                 ('spanish', 'english', 'portuguese')
             )
 
+            st.write("")  # Add empty space
+            st.write("")  # Add empty space
+
             # Add confirm button
-            if st.button("Confirm Configuration"):
+            if st.button("Start Chat Session"):
                 st.session_state.thread_id = thread_id
                 st.session_state.language = language
                 st.session_state.config_confirmed = True
@@ -99,9 +111,6 @@ def fundamental_agent() -> str:
 
             # Display questions section with delete buttons
             with questions_tab[0]:
-                if st.button("Load Base questions", key="load_questions"):
-                    st.session_state.questions_list = load_base_questions()
-                    st.rerun()
 
                 with st.expander("View Questions List", expanded=True):
                     if "questions_list" in st.session_state and st.session_state.questions_list:
