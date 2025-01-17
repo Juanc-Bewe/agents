@@ -17,7 +17,7 @@ def fundamental_agent() -> str:
 
     # Initialize thread_id in session state if it doesn't exist
     if "thread_id" not in st.session_state:
-        st.session_state.thread_id = str(random.randint(1, 1000000))
+        st.session_state.thread_id = str(int(time.time()))
 
     # Load saved questions for this thread when initializing session state
 
