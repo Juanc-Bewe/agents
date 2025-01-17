@@ -111,16 +111,7 @@ def fundamental_agent() -> str:
         with st.chat_message("assistant"):
             message_placeholder = st.empty()
             with st.spinner("Thinking..."):
-                # response = requests.post(URL, json={
-                # 	"answer": prompt,
-                # 	"thread_id": thread_id,
-                # 	"account_id": account_id,
-                # 	"type": account_type,
-                # 	"language": language,
-                # 	"question_quantity": "question_quantity"
-                # })
-                # full_response = response.json().get("response", "Esto por ahora es siempre lo mismo")
-                full_response = "Esto por ahora es siempre lo mismo"
+                full_response = "Lo sentimos, esta funcionalidad se encuentra actualmente en desarrollo. Nuestro equipo está trabajando diligentemente para implementar esta característica. Por favor, vuelva a intentarlo más tarde."
                 message_placeholder.markdown(full_response)
                 st.session_state.messages.append({"role": "assistant", "content": full_response})
 
