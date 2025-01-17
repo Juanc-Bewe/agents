@@ -1,73 +1,108 @@
 import requests
 import streamlit as st
 import random
+import time
 
 URL = "https://backendbeweliteqa.bewe.co/api/v1/llm/interview"
 
-def interviewer_agent() -> str:
-	print("interviewer_agent executed")
-	st.title("Interviewer Agent")
+def fundamental_agent() -> str:
+    print("fundamental_agent executed")
+    st.title("🤖 Fundamental Agent")
 
-	# Initialize thread_id in session state if it doesn't exist
-	if "thread_id" not in st.session_state:
-		st.session_state.thread_id = str(random.randint(1, 1000000))
+    # Initialize thread_id in session state if it doesn't exist
+    if "thread_id" not in st.session_state:
+        st.session_state.thread_id = str(random.randint(1, 1000000))
 
-	account_id = st.sidebar.text_input('Account ID', value="234234234234", help="This feature is not available at the moment")
-	thread_id = st.sidebar.text_input('Thread ID', value=st.session_state.thread_id, help="Save for checkpointer of the conversation")
+    st.sidebar.markdown("## ⚙️ Fundamental Config")
+    test_tab = st.sidebar.tabs(["Basic config", "Questions"])
 
-	language = st.sidebar.selectbox(
-		'Language',
-		('spanish', 'english', 'portuguese')
-	)
+    with test_tab[0]:
+        # account_id = st.sidebar.text_input('Account ID', value="234234234234", help="This feature is not available at the moment")
+        thread_id = st.text_input('Thread ID', value=st.session_state.thread_id, help="Save for checkpointer of the conversation")
 
-	account_type = st.sidebar.selectbox(
-		'Type',
-		('beauty', 'other'),
-		help="Select the type of account you want to generate questions for. Other is for any other type of account. (Only load base questions)"
-	)
+        language = st.selectbox(
+            'Language',
+            ('spanish', 'english', 'portuguese')
+        )
 
-	question_quantity = st.sidebar.number_input(
-		'Question Quantity',
-		value=100,
-		help="Enter the number of questions you want to generate. Setting it to 100 will generate all available questions."
-	)
+    with test_tab[1]:
+        questions_tab = st.tabs(["Create", "View"])
 
-	if account_type == 'other':
-		account_type = st.sidebar.text_input('Other')
+        # Create new question section
+        with questions_tab[0]:
+            with st.expander("Create New Question", expanded=True):
+                question = st.text_input("Question", key="new_question")
+                criteria = st.text_area("Evaluation Criteria", key="new_criteria", 
+                    help="Enter the criteria to evaluate the answer")
 
-	# Initialize chat history
-	if "messages" not in st.session_state:
-		st.session_state.messages = []
+                if st.button("Add Question"):
+                    if "questions_list" not in st.session_state:
+                        st.session_state.questions_list = []
 
-	# Display chat messages from history on app rerun
-	for message in st.session_state.messages:
-		with st.chat_message(message["role"]):
-			st.markdown(message["content"])
+                    if question and criteria:
+                        st.session_state.questions_list.append({
+                            "question": question,
+                            "criteria": criteria
+                        })
+                        # Clear the inputs by modifying the session state before widget creation
+                        st.success("Question added successfully!")
+                        time.sleep(1)  # Wait 1 second to show success message
+                        st.session_state.pop('new_question', None)
+                        st.session_state.pop('new_criteria', None)
+                        st.session_state.new_question = ""
+                        st.session_state.new_criteria = ""
+                        st.rerun()
+        # Display questions section
+        with questions_tab[1]:
+            with st.expander("View Questions List", expanded=True):
+                if "questions_list" in st.session_state and st.session_state.questions_list:
+                    st.write("Current Questions:")
+                    for i, q in enumerate(st.session_state.questions_list):
+                        col1, col2 = st.columns([5,1])
+                        with col1:
+                            st.write(f"{i+1}. Question: {q['question']}")
+                            st.write(f"   Criteria: {q['criteria']}")
+                        with col2:
+                            if st.button("🗑️", key=f"delete_{i}"):
+                                st.session_state.questions_list.pop(i)
+                                st.rerun()
+                else:
+                    st.info("No questions added yet.")
 
-	# Accept user input
-	if prompt := st.chat_input("What is up?"):
-		# Add user message to chat history
-		st.session_state.messages.append({"role": "user", "content": prompt})
-		# Display user message in chat message container
-		with st.chat_message("user"):
-			st.markdown(prompt)
-		print(prompt)
-		# Display assistant response in chat message container
-		with st.chat_message("assistant"):
-			message_placeholder = st.empty()
-			with st.spinner("Thinking..."):
-				response = requests.post(URL, json={
-					"answer": prompt,
-					"thread_id": thread_id,
-					"account_id": account_id,
-					"type": account_type,
-					"language": language,
-					"question_quantity": question_quantity
-				})
-				full_response = response.json().get("response", "")
-				message_placeholder.markdown(full_response)
-				st.session_state.messages.append({"role": "assistant", "content": full_response})
+    # Initialize chat history
+    if "messages" not in st.session_state:
+        st.session_state.messages = []
+
+    # Display chat messages from history on app rerun
+    for message in st.session_state.messages:
+        with st.chat_message(message["role"]):
+            st.markdown(message["content"])
+
+    # Accept user input
+    if prompt := st.chat_input("What is up?"):
+        # Add user message to chat history
+        st.session_state.messages.append({"role": "user", "content": prompt})
+        # Display user message in chat message container
+        with st.chat_message("user"):
+            st.markdown(prompt)
+        print(prompt)
+        # Display assistant response in chat message container
+        with st.chat_message("assistant"):
+            message_placeholder = st.empty()
+            with st.spinner("Thinking..."):
+                # response = requests.post(URL, json={
+                # 	"answer": prompt,
+                # 	"thread_id": thread_id,
+                # 	"account_id": account_id,
+                # 	"type": account_type,
+                # 	"language": language,
+                # 	"question_quantity": "question_quantity"
+                # })
+                # full_response = response.json().get("response", "Esto por ahora es siempre lo mismo")
+                full_response = "Esto por ahora es siempre lo mismo"
+                message_placeholder.markdown(full_response)
+                st.session_state.messages.append({"role": "assistant", "content": full_response})
 
 
 if __name__ == "__main__":
-	interviewer_agent()
+    fundamental_agent()
