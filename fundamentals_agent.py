@@ -1,9 +1,7 @@
 import requests
 import streamlit as st
-import random
 import time
 import json
-import os
 
 URL = "https://backendbeweliteqa.bewe.co/api/v1/llm/onboarding"
 
@@ -156,7 +154,7 @@ def fundamental_agent() -> str:
             with st.spinner("Thinking..."):
                 # full_response = "Lo sentimos, esta funcionalidad se encuentra actualmente en desarrollo. Nuestro equipo está trabajando diligentemente para implementar esta característica. Por favor, vuelva a intentarlo más tarde."
                 response = requests.post(URL, json={
-                    "message": prompt,
+                    "message": str(prompt),
                     "thread_id": st.session_state.thread_id,
                     "language": st.session_state.language,
                     "base_questions": st.session_state.questions_list

@@ -1,7 +1,6 @@
 import requests
 import streamlit as st
-import random
-
+import time
 URL = "https://backendbeweliteqa.bewe.co/api/v1/llm/interview"
 
 def interviewer_agent() -> str:
@@ -10,7 +9,7 @@ def interviewer_agent() -> str:
 
 	# Initialize thread_id in session state if it doesn't exist
 	if "thread_id" not in st.session_state:
-		st.session_state.thread_id = str(random.randint(1, 1000000))
+		st.session_state.thread_id = str(int(time.time()))
 
 	account_id = st.sidebar.text_input('Account ID', value="234234234234", help="This feature is not available at the moment")
 	thread_id = st.sidebar.text_input('Thread ID', value=st.session_state.thread_id, help="Save for checkpointer of the conversation")
