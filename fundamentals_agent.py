@@ -13,11 +13,8 @@ def fundamental_agent() -> str:
     print("fundamental_agent executed")
     st.title("🤖 Fundamental Agent")
 
-    # Initialize thread_id in session state if it doesn't exist
     if "thread_id" not in st.session_state:
         st.session_state.thread_id = str(int(time.time()))
-
-    # Load saved questions for this thread when initializing session state
 
     st.sidebar.markdown("## ⚙️ Fundamental Config")
     tabs = st.sidebar.tabs(["Basic config", "Questions"])
@@ -44,6 +41,11 @@ def fundamental_agent() -> str:
             language = st.selectbox(
                 'Language',
                 ('spanish', 'english', 'portuguese')
+            )
+
+            main_voice = st.selectbox(
+                'Main Voice',
+                ('Linda', 'Linda-v2',)
             )
 
             st.write("")  # Add empty space
@@ -130,40 +132,51 @@ def fundamental_agent() -> str:
     if "messages" not in st.session_state:
         st.session_state.messages = []
 
-    # Display chat messages from history on app rerun
-    for message in st.session_state.messages:
-        with st.chat_message(message["role"]):
-            st.markdown(message["content"])
-
     # Accept user input - Add configuration check
     if "config_confirmed" not in st.session_state:
         st.session_state.config_confirmed = False
 
+    if st.session_state.config_confirmed and len(st.session_state.messages) == 0:
+        st.session_state.messages.append({"role": "assistant", "content": "Hola 👋", "audio_file": "./audio/Linda-neutro-v2.mp3"})
+
+    # Display chat messages from history on app rerun
+    for i, message in enumerate(st.session_state.messages):
+        with st.chat_message(message["role"]):
+            st.markdown(message["content"])
+            if "audio_file" in message:
+                # Autoplay only for the last assistant message
+                autoplay = message["role"] == "assistant" and i == ( len(st.session_state.messages) - 1)
+                st.audio(message["audio_file"], format='audio/mp3', start_time=0, autoplay=autoplay)
+
     if not st.session_state.config_confirmed:
         st.warning("Please confirm the configuration in the sidebar before starting the chat.")
-    elif prompt := st.chat_input("What is up?"):
-        # Add user message to chat history
-        st.session_state.messages.append({"role": "user", "content": prompt})
-        # Display user message in chat message container
-        with st.chat_message("user"):
-            st.markdown(prompt)
-        print(prompt)
-        # Display assistant response in chat message container
-        with st.chat_message("assistant"):
-            message_placeholder = st.empty()
-            with st.spinner("Thinking..."):
-                # full_response = "Lo sentimos, esta funcionalidad se encuentra actualmente en desarrollo. Nuestro equipo está trabajando diligentemente para implementar esta característica. Por favor, vuelva a intentarlo más tarde."
-                response = requests.post(URL, json={
-                    "message": str(prompt),
-                    "thread_id": st.session_state.thread_id,
-                    "language": st.session_state.language,
-                    "base_questions": st.session_state.questions_list
-				})
-                print(response.json())
-                full_response = response.json().get("message", "")
-                message_placeholder.markdown(full_response)
-                # //google how to append a list of messages
-                st.session_state.messages.append({"role": "assistant", "content": full_response})
+    else:
+        if prompt := st.chat_input("What is up?"):
+            # Add user message to chat history
+            # if "messages" not in st.session_state:
+            st.session_state.messages.append({"role": "user", "content": prompt})
+            # Display user message in chat message container
+            with st.chat_message("user"):
+                st.markdown(prompt)
+                print(prompt)
+            # Display assistant response in chat message container
+            with st.chat_message("assistant"):
+                message_placeholder = st.empty()
+                with st.spinner("Thinking..."):
+                    response = requests.post(URL, json={
+                        "message": str(prompt),
+                        "thread_id": st.session_state.thread_id,
+                        "language": st.session_state.language,
+                        "base_questions": st.session_state.questions_list
+                    })
+                    print(response.json())
+                    full_response = response.json().get("message", "")
+                    message_placeholder.markdown(full_response)
+
+                    st.session_state.messages.append({
+                        "role": "assistant",
+                        "content": full_response,
+                    })
 
 
 if __name__ == "__main__":
