@@ -5,7 +5,7 @@ import time
 import json
 import os
 
-URL = "https://backendbeweliteqa.bewe.co/api/v1/llm/interview"
+URL = "https://backendbeweliteqa.bewe.co/api/v1/llm/onboarding"
 
 def load_base_questions():
     with open('questions/base-1.json', 'r') as file:
@@ -145,8 +145,17 @@ def fundamental_agent() -> str:
         with st.chat_message("assistant"):
             message_placeholder = st.empty()
             with st.spinner("Thinking..."):
-                full_response = "Lo sentimos, esta funcionalidad se encuentra actualmente en desarrollo. Nuestro equipo está trabajando diligentemente para implementar esta característica. Por favor, vuelva a intentarlo más tarde."
+                # full_response = "Lo sentimos, esta funcionalidad se encuentra actualmente en desarrollo. Nuestro equipo está trabajando diligentemente para implementar esta característica. Por favor, vuelva a intentarlo más tarde."
+                response = requests.post(URL, json={
+                    "message": prompt,
+                    "thread_id": st.session_state.thread_id,
+                    "language": st.session_state.language,
+                    "base_questions": st.session_state.questions_list
+				})
+                print(response.json())
+                full_response = response.json().get("message", "")
                 message_placeholder.markdown(full_response)
+                # //google how to append a list of messages
                 st.session_state.messages.append({"role": "assistant", "content": full_response})
 
 
