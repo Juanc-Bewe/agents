@@ -2,8 +2,25 @@ import requests
 import streamlit as st
 import random
 import time
+import json
+import os
 
 URL = "https://backendbeweliteqa.bewe.co/api/v1/llm/interview"
+
+def save_questions_to_file(thread_id, questions):
+    # Create a directory for saved questions if it doesn't exist
+    os.makedirs('saved_questions', exist_ok=True)
+    filename = f'saved_questions/{thread_id}.json'
+    with open(filename, 'w') as f:
+        json.dump(questions, f)
+
+def load_questions_from_file(thread_id):
+    try:
+        filename = f'saved_questions/{thread_id}.json'
+        with open(filename, 'r') as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return []
 
 def fundamental_agent() -> str:
     print("fundamental_agent executed")
@@ -13,12 +30,26 @@ def fundamental_agent() -> str:
     if "thread_id" not in st.session_state:
         st.session_state.thread_id = str(random.randint(1, 1000000))
 
+    # Load saved questions for this thread when initializing session state
+    if "questions_list" not in st.session_state:
+        st.session_state.questions_list = load_questions_from_file(st.session_state.thread_id)
+
     st.sidebar.markdown("## ⚙️ Fundamental Config")
     test_tab = st.sidebar.tabs(["Basic config", "Questions"])
 
     with test_tab[0]:
-        # account_id = st.sidebar.text_input('Account ID', value="234234234234", help="This feature is not available at the moment")
-        thread_id = st.text_input('Thread ID', value=st.session_state.thread_id, help="Save for checkpointer of the conversation")
+        # Get previous thread_id for comparison
+        previous_thread_id = st.session_state.thread_id
+
+        # Thread ID input
+        thread_id = st.text_input('Thread ID', value=st.session_state.thread_id, 
+            help="Save for checkpointer of the conversation")
+
+        # Update thread_id in session state and reload questions if changed
+        if thread_id != previous_thread_id:
+            st.session_state.thread_id = thread_id
+            st.session_state.questions_list = load_questions_from_file(thread_id)
+            st.rerun()
 
         language = st.selectbox(
             'Language',
