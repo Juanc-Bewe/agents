@@ -97,7 +97,11 @@ def fundamental_agent() -> str:
                         if "questions_list" not in st.session_state:
                             st.session_state.questions_list = []
 
-                        if question and criteria:
+                        # Check for duplicate ID
+                        existing_ids = [q['id'] for q in st.session_state.questions_list]
+                        if question_id in existing_ids:
+                            st.error(f"Question ID {question_id} already exists. Please choose a different ID.")
+                        elif question and criteria:
                             st.session_state.questions_list.append({
                                 "id": question_id,
                                 "question": question,
@@ -123,7 +127,7 @@ def fundamental_agent() -> str:
                         for i, q in enumerate(st.session_state.questions_list):
                             col1, col2 = st.columns([5,1])
                             with col1:
-                                st.write(f"{i+1}. Question: {q['question']}")
+                                st.write(f"{q['id']}. Question: {q['question']}")
                                 st.write(f"   Criteria: {q['criteria']}")
                                 st.write(f"   Example: {q.get('example', 'No example provided')}")
                             with col2:
