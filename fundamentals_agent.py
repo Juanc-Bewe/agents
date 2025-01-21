@@ -4,6 +4,9 @@ import time
 import json
 
 URL = "https://backendbeweliteqa.bewe.co/api/v1/llm/onboarding"
+URLV2 = "https://backendbeweliteqa.bewe.co/api/v1/llm/onboarding/fundamentals"
+# URLV2_LOCAL = "http://localhost:9007/api/v1/llm/onboarding/fundamentals"
+
 
 def load_base_questions():
     with open('questions/base-1.json', 'r') as file:
@@ -83,6 +86,7 @@ def fundamental_agent() -> str:
             # Create new question section
             with questions_tab[1]:
                 with st.expander("Create New Question", expanded=True):
+                    question_id = st.number_input("Question ID", min_value=7, step=1, key="new_question_id", help="Enter a unique ID for the question - this ID must not be used by any other question")
                     question = st.text_input("Question", key="new_question")
                     criteria = st.text_area("Evaluation Criteria", key="new_criteria",
                         help="Enter the criteria to evaluate the answer")
@@ -95,6 +99,7 @@ def fundamental_agent() -> str:
 
                         if question and criteria:
                             st.session_state.questions_list.append({
+                                "id": question_id,
                                 "question": question,
                                 "criteria": criteria,
                                 "example": example
@@ -163,9 +168,10 @@ def fundamental_agent() -> str:
             with st.chat_message("assistant"):
                 message_placeholder = st.empty()
                 with st.spinner("Thinking..."):
-                    response = requests.post(URL, json={
+                    response = requests.post(URLV2, json={
                         "message": str(prompt),
                         "thread_id": st.session_state.thread_id,
+                        "account_id": st.session_state.thread_id,
                         "language": st.session_state.language,
                         "base_questions": st.session_state.questions_list
                     })

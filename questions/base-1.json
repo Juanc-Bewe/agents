@@ -1,30 +1,36 @@
 [
   {
+    "id": "1",
     "question": "Cuéntame, ¿cómo te gusta que tus clientes te vean o recuerden? ¿Qué te hace único?",
     "criteria": "Información capturada: • Valores de marca: Elegancia, relajación, exclusividad, etc. • Diferenciales: Servicios únicos, enfoque personalizado, ambiente especial. • Tono de comunicación: Formal, relajado, amigable. • Datos guardados: • Tono: Relajante y profesional. • Valores: Enfocado en bienestar y tranquilidad. • Diferencial: Experiencia de escape al estrés.",
     "example": "El dueño dice: 'Quiero que mis clientes sientan que ofrecemos un oasis de paz donde pueden desconectar del estrés.'"
   },
   {
+    "id": "2",
     "question": "¿Qué tipo de servicios o productos ofreces y cómo te gusta que tus clientes los reserven o compren?",
     "criteria": "Información capturada: • Servicios principales: Masajes terapéuticos, faciales, aromaterapia, etc. • Procesos de reserva: Online, por llamada, en persona. • Horarios populares: Tardes, fines de semana, etc. • Datos guardados: • Servicios: Masajes relajantes, masajes con piedras calientes, faciales. • Proceso de reservas: Priorizar reservas online. • Horarios recomendados: Mostrar disponibilidad más flexible en fines de semana.",
     "example": "El dueño dice: 'Ofrecemos masajes relajantes, masajes con piedras calientes y faciales, y preferimos que los clientes reserven por la web para automatizar el proceso.'"
   },
   {
+    "id": "3",
     "question": "¿Quiénes son tus clientes ideales? ¿Cómo son y qué suelen buscar en ti?",
     "criteria": "Información capturada: • Segmento de clientes: Ejecutivos, mamás, parejas, etc. • Motivaciones: Relajación, aliviar el estrés, cuidado personal. • Frecuencia esperada: Semanal, mensual, ocasional. • Datos guardados: • Segmento objetivo: Mujeres 30-50 años. • Motivación principal: Relajación y alivio del estrés. • Campañas sugeridas: Ofertas para fines de semana o paquetes de bienestar mensual.",
     "example": "El dueño dice: 'La mayoría son mujeres de entre 30 y 50 años que buscan relajarse después de una semana estresante.'"
   },
   {
+    "id": "4",
     "question": "Si pudiera ayudarte con una sola cosa que te hace perder tiempo, ¿qué sería?",
     "criteria": "Información capturada: • Problemas operativos: Gestión de reservas, responder preguntas frecuentes, manejo de cancelaciones. • Tareas prioritarias: Automatización de reservas, recordatorios de citas, atención al cliente. • Datos guardados: • Problema principal: Confirmación y recordatorios manuales. • Automatización: Activar recordatorios automáticos y confirmaciones a través de Linda. • Prioridad: Reducir el tiempo dedicado a la gestión de citas.",
     "example": "El dueño dice: 'Me toma mucho tiempo confirmar reservas y enviar recordatorios a los clientes.'"
   },
   {
+    "id": "5",
     "question": "Imagina que soy parte de tu equipo. ¿Cómo te gustaría que hable con tus clientes en tu nombre?",
     "criteria": "Información capturada: • Tono y estilo de comunicación: Relajado, cercano, profesional, lujoso. • Tipo de mensajes: Informativos, promocionales, empáticos. • Datos guardados: • Tono: Relajado y profesional. • Personalización de mensajes: Usar palabras como 'bienestar' y 'premium'. • Estilo: Comunicaciones cuidadas, enfocadas en transmitir lujo.",
     "example": "El dueño dice: 'Quiero que hables de forma relajada pero profesional, como si fueras parte de una experiencia premium.'"
   },
   {
+    "id": "6",
     "question": "¿Qué sueñas lograr con tu negocio este año?",
     "criteria": "Información capturada: • Metas principales: Incrementar reservas, expandir servicios, fidelizar clientes. • Estrategia de crecimiento: Campañas, programas de lealtad, paquetes promocionales. • Datos guardados: • Meta de negocio: Incremento de reservas. • Estrategia: Promocionar masajes para parejas. • Campañas sugeridas: Crear promociones para fechas especiales (San Valentín, aniversarios).",
     "example": "El dueño dice: 'Quiero aumentar las reservas un 20% y lanzar un nuevo servicio de masajes para parejas.'"
