@@ -182,7 +182,7 @@ def fundamental_agent() -> str:
                 with st.spinner("Thinking..."):
                     response = requests.post(URLV2, json={
                         "content": {
-                            "type": "message",
+                            "type": "text",
                             "content": prompt
                         },
                         "thread_id": st.session_state.thread_id,
