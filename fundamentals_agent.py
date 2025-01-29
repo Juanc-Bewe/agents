@@ -5,7 +5,7 @@ import json
 
 URL = "https://backendbeweliteqa.bewe.co/api/v1/llm/onboarding"
 URLV2 = "https://backendbeweliteqa.bewe.co/api/v1/llm/onboarding/fundamentals"
-# URLV2_LOCAL = "http://localhost:9007/api/v1/llm/onboarding/fundamentals"
+URLV2_LOCAL = "http://localhost:9007/api/v1/llm/onboarding/fundamentals"
 
 
 def load_base_questions():
@@ -41,10 +41,17 @@ def fundamental_agent() -> str:
             thread_id = st.text_input('Thread ID', value=st.session_state.thread_id,
                 help="Save for checkpointer of the conversation")
 
+            # Or Option 2: Using a dictionary
+            language_options = {
+                'Spanish': 'es',
+                'English': 'en',
+                'Portuguese': 'pt'
+            }
             language = st.selectbox(
                 'Language',
-                ('spanish', 'english', 'portuguese')
+                options=list(language_options.keys())
             )
+            language = language_options[language]
 
             main_voice = st.selectbox(
                 'Main Voice',
@@ -59,6 +66,7 @@ def fundamental_agent() -> str:
                 st.session_state.thread_id = thread_id
                 st.session_state.language = language
                 st.session_state.config_confirmed = True
+                st.session_state.questions_list = st.session_state.get("questions_list", [])
                 st.success("Configuration confirmed!")
                 st.rerun()
 
@@ -173,14 +181,19 @@ def fundamental_agent() -> str:
                 message_placeholder = st.empty()
                 with st.spinner("Thinking..."):
                     response = requests.post(URLV2, json={
-                        "message": str(prompt),
+                        "content": {
+                            "type": "message",
+                            "content": prompt
+                        },
                         "thread_id": st.session_state.thread_id,
                         "account_id": st.session_state.thread_id,
                         "language": st.session_state.language,
-                        "base_questions": st.session_state.questions_list
+                        "base_questions": st.session_state.questions_list,
                     })
-                    print(response.json())
-                    full_response = response.json().get("message", "")
+                    response_data = response.json()
+                    # Get the text from the first content item
+                    full_response = response_data['content'][0]['text']
+                    print(full_response)
                     message_placeholder.markdown(full_response)
 
                     st.session_state.messages.append({
