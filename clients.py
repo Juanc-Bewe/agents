@@ -1,10 +1,11 @@
+import os
 import requests
 import streamlit as st
 import time
-import json
 
 URL = "https://backendbeweliteqa.bewe.co/api/v1/llm/chat/client"
 URL_DEV = "http://localhost:9007/api/v1/llm/chat/client"
+
 
 def clients_chat() -> str:
     print("clients_chat executed")
@@ -20,11 +21,16 @@ def clients_chat() -> str:
         if "config_confirmed" in st.session_state and st.session_state.config_confirmed:
             st.warning("⚠️ Configuration cannot be modified while chat is active. Please refresh the page to start a new session.")
             st.info(f"Thread ID: {st.session_state.thread_id}")
+            st.info(f"Account ID: {st.session_state.account_id}")
             st.info(f"Language: {st.session_state.language}")
         else:
             # Thread ID input
             thread_id = st.text_input('Thread ID', value=st.session_state.thread_id,
                 help="Save for checkpointer of the conversation")
+
+            # Account ID input
+            account_id = st.text_input('Account ID', value=st.session_state.get('account_id', ''),
+                help="Enter the account identifier (required)")
 
             # Or Option 2: Using a dictionary
             language_options = {
@@ -41,13 +47,17 @@ def clients_chat() -> str:
             st.write("")  # Add empty space
             st.write("")  # Add empty space
 
-            # Add confirm button
+            # Add confirm button with account_id validation
             if st.button("Start Chat Session"):
-                st.session_state.thread_id = thread_id
-                st.session_state.language = language
-                st.session_state.config_confirmed = True
-                st.success("Configuration confirmed!")
-                st.rerun()
+                if not account_id:
+                    st.error("Account ID is required to start the chat session.")
+                else:
+                    st.session_state.thread_id = thread_id
+                    st.session_state.account_id = account_id
+                    st.session_state.language = language
+                    st.session_state.config_confirmed = True
+                    st.success("Configuration confirmed!")
+                    st.rerun()
 
     # Initialize chat history
     if "messages" not in st.session_state:
@@ -79,7 +89,7 @@ def clients_chat() -> str:
                 with st.spinner("Thinking..."):
                     response = requests.post(URL, json={
                         "message": prompt,
-                        "account_id": st.session_state.thread_id,
+                        "account_id": st.session_state.account_id,
                         "thread_id": st.session_state.thread_id,
                         "language": st.session_state.language,
                     })
