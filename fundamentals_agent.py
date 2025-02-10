@@ -192,7 +192,7 @@ def fundamental_agent() -> str:
                     })
                     response_data = response.json()
                     # Get the text from the first content item
-                    full_response = response_data['content'][0]['text']
+                    full_response = response_data['content'][0]['content']
                     print(full_response)
                     message_placeholder.markdown(full_response)
 

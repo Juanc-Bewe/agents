@@ -3,8 +3,8 @@ import requests
 import streamlit as st
 import time
 
-URL = "https://backendbeweliteqa.bewe.co/api/v1/llm/chat/client"
-URL_DEV = "http://localhost:9007/api/v1/llm/chat/client"
+#URL = "https://backendbeweliteqa.bewe.co/api/v1/llm/chat/client"
+URL = "http://localhost:9007/api/v1/llm/chat/client"
 
 
 def clients_chat() -> str:
@@ -23,6 +23,9 @@ def clients_chat() -> str:
             st.info(f"Thread ID: {st.session_state.thread_id}")
             st.info(f"Account ID: {st.session_state.account_id}")
             st.info(f"Language: {st.session_state.language}")
+            st.info(f"Enterprise ID: {st.session_state.enterprise_id}")
+            st.info(f"Enterprise Name: {st.session_state.enterprise_name}")
+            st.info(f"Name Assistant: {st.session_state.name_assistant}")
         else:
             # Thread ID input
             thread_id = st.text_input('Thread ID', value=st.session_state.thread_id,
@@ -44,6 +47,18 @@ def clients_chat() -> str:
             )
             language = language_options[language]
 
+            # Enterprise ID input
+            enterprise_id = st.text_input('Enterprise ID', value=st.session_state.get('enterprise_id', ''),
+                help="Enter the enterprise identifier (required)")
+
+            # Enterprise Name input
+            enterprise_name = st.text_input('Enterprise Name', value=st.session_state.get('enterprise_name', ''),
+                help="Enter the enterprise name (required)")
+
+            # Name Assistant input
+            name_assistant = st.text_input('Name Assistant', value=st.session_state.get('name_assistant', ''),
+                help="Enter the name of the assistant (required)")
+
             st.write("")  # Add empty space
             st.write("")  # Add empty space
 
@@ -56,6 +71,9 @@ def clients_chat() -> str:
                     st.session_state.account_id = account_id
                     st.session_state.language = language
                     st.session_state.config_confirmed = True
+                    st.session_state.enterprise_id = enterprise_id
+                    st.session_state.enterprise_name = enterprise_name
+                    st.session_state.name_assistant = name_assistant
                     st.success("Configuration confirmed!")
                     st.rerun()
 
@@ -88,14 +106,20 @@ def clients_chat() -> str:
                 message_placeholder = st.empty()
                 with st.spinner("Thinking..."):
                     response = requests.post(URL, json={
-                        "message": prompt,
+                        "content": {
+                            "type": "text",
+                            "content": prompt
+                        },
                         "account_id": st.session_state.account_id,
                         "thread_id": st.session_state.thread_id,
                         "language": st.session_state.language,
+                        "enterprise_id": st.session_state.enterprise_id,
+                        "enterprise_name": st.session_state.enterprise_name,
+                        "name_assistant": st.session_state.name_assistant,
                     })
                     response_data = response.json()
                     # Get the text from the first content item
-                    full_response = response_data["message"]
+                    full_response = response_data["content"][0]["content"]
                     print(full_response)
                     message_placeholder.markdown(full_response)
 
