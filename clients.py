@@ -3,8 +3,8 @@ import requests
 import streamlit as st
 import time
 
-#URL = "https://backendbeweliteqa.bewe.co/api/v1/llm/chat/client"
-URL = "http://localhost:9007/api/v1/llm/chat/client"
+URL = "https://backendbeweliteqa.bewe.co/api/v1/llm/chat/client"
+# URL = "http://localhost:9007/api/v1/llm/chat/client"
 
 
 def clients_chat() -> str:
