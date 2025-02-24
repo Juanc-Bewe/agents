@@ -3,9 +3,9 @@ import streamlit as st
 import time
 import json
 
-URL = "https://backendbeweliteqa.bewe.co/api/v1/llm/onboarding"
-URLV2 = "https://backendbeweliteqa.bewe.co/api/v1/llm/onboarding/fundamentals"
-URLV2_LOCAL = "http://localhost:9007/api/v1/llm/onboarding/fundamentals"
+URL = "https://backendbeweliteqa.bewe.co/api/v1/ai/onboarding"
+URLV2 = "https://backendbeweliteqa.bewe.co/api/v1/ai/onboarding/fundamentals"
+URLV2_LOCAL = "http://localhost:9007/api/v1/ai/onboarding/fundamentals"
 
 
 def load_base_questions():
